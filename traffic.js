@@ -11,8 +11,14 @@ $ = require('jquery');
     for (var idx in urls) {
         deferredList.push(getRoutes(urls[idx]));
     }
+
+    console.log("\"" + ["routeName", "distance", "timeWithoutTraffic", "timeWithTraffic"].join("\",\"") + "\"");
     $.when.apply(this, deferredList).done(function () {
-        console.log(results);
+//        console.log(results);
+        for (var idx in results) {
+            var r = results[idx];
+            console.log("\"" + [r.routeName, r.distance, r.timeWithoutTraffic, r.timeWithTraffic].join("\",\"") + "\"");
+        }
     });
 
     /**
@@ -33,7 +39,6 @@ $ = require('jquery');
                 var distance = info.eq(0).html();
                 var timeWithoutTraffic = info.eq(1).html();
                 var timeWithTraffic = route.find('.altroute-aux').find('span').html().split(':')[1].trim();
-//        console.log("\"" + [routeName, distance, timeWithoutTraffic, timeWithTraffic].join("\", \"") + "\"");
                 results.push({
                     routeName: routeName,
                     distance: splitTimeDistanceStrings(distance),
