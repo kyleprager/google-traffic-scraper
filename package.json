@@ -1,0 +1,9 @@
+{
+    "name": "route_scraper",
+    "description": "Scrapes route info from Google Maps URLs",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "jquery": "*"
+    }
+}
