@@ -9,17 +9,35 @@ $ = require('jquery');
 
     var deferredList = [];
     for (var idx in urls) {
-        deferredList.push(getRoutes(urls[idx]));
+        deferredList.push(getRoutes(urls[idx], results));
     }
 
-    console.log("\"" + ["routeName", "distance", "timeWithoutTraffic", "timeWithTraffic"].join("\",\"") + "\"");
     $.when.apply(this, deferredList).done(function () {
-//        console.log(results);
-        for (var idx in results) {
-            var r = results[idx];
-            console.log("\"" + [r.routeName, r.distance, r.timeWithoutTraffic, r.timeWithTraffic].join("\",\"") + "\"");
-        }
+        results = results.sort(sortResultsByName);
+        logResults(results);
+        printResultsCSV(results);
     });
+
+    /**
+     * START HELPER FUNCTIONS - Helper functions to print out results
+     */
+    function logResults(data) {
+        console.log(data);
+    }
+
+    function printResultsCSV(data) {
+        for (var idx in data) {
+            var r = data[idx];
+            console.log("\"" + [r.routeName, r.dateTime, r.timeWithTraffic].join("\",\"") + "\"");
+        }
+    }
+
+    function sortResultsByName(a, b) {
+        return a.routeName > b.routeName;
+    }
+    /**
+     * END HELPER FUNCTIONS
+     */
 
     /**
      * This function takes a URL to a Google Maps directions results page with route options and puts the route information
@@ -29,7 +47,7 @@ $ = require('jquery');
      * @param url Google Maps URL with direction results with route options.
      * @returns {*} returns a promise object that can be used as a deferred.
      */
-    function getRoutes(url) {
+    function getRoutes(url, resultsList) {
         return $.get(url,function (data) {
             var container = $(data).find(".dir-altroute-inner");
             $.each(container, function (idx, route) {
@@ -39,11 +57,12 @@ $ = require('jquery');
                 var distance = info.eq(0).html();
                 var timeWithoutTraffic = info.eq(1).html();
                 var timeWithTraffic = route.find('.altroute-aux').find('span').html().split(':')[1].trim();
-                results.push({
+                resultsList.push({
                     routeName: routeName,
                     distance: splitTimeDistanceStrings(distance),
                     timeWithoutTraffic: splitTimeDistanceStrings(timeWithoutTraffic),
-                    timeWithTraffic: splitTimeDistanceStrings(timeWithTraffic)
+                    timeWithTraffic: splitTimeDistanceStrings(timeWithTraffic),
+                    dateTime: new Date()
                 });
             });
         }).promise();
